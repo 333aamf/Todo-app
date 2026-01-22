@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Tasks</title>
     
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22My%20Tasks%22,%22short_name%22:%22Tasks%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8fafc%22,%22theme_color%22:%22%236366f1%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]} ">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><path d=%22M30 50l15 15l25-30%22 stroke=%22white%22 stroke-width=%228%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><path d=%22M30 50l15 15l25-30%22 stroke=%22white%22 stroke-width=%228%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>">
     
@@ -13,20 +15,21 @@
 
     <style>
         :root { --p: #6366f1; --bg: #f8fafc; --txt: #1e293b; }
-        * { box-sizing: border-box; font-family: sans-serif; }
-        body { background: var(--bg); color: var(--txt); padding: 20px; display: flex; justify-content: center; }
-        .card { width: 100%; max-width: 450px; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h1 { margin-bottom: 20px; font-weight: 800; }
+        * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--txt); padding: 20px; display: flex; justify-content: center; margin: 0; }
+        .card { width: 100%; max-width: 450px; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-top: 20px; }
+        h1 { margin-bottom: 20px; font-weight: 800; font-size: 24px; }
         .input-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 16px; outline: none; }
-        input:focus { border-color: var(--p); }
+        input[type="text"] { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; font-size: 16px; outline: none; transition: 0.2s; }
+        input[type="text"]:focus { border-color: var(--p); }
         #add { background: var(--p); color: white; border: none; padding: 0 20px; border-radius: 15px; font-weight: bold; cursor: pointer; }
         ul { list-style: none; padding: 0; }
-        li { background: #f1f5f9; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; }
-        .t { flex: 1; margin: 0 10px; cursor: pointer; }
+        li { background: #f1f5f9; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; animation: pop 0.2s ease; }
+        @keyframes pop { from {transform: scale(0.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        .t { flex: 1; margin: 0 10px; cursor: pointer; font-size: 16px; }
         .done { text-decoration: line-through; opacity: 0.5; }
-        .del { color: #ff4757; background: none; border: none; font-weight: bold; cursor: pointer; }
-        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--p); }
+        .del { color: #ff4757; background: none; border: none; font-size: 18px; font-weight: bold; cursor: pointer; padding: 5px; }
+        input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--p); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -66,6 +69,7 @@
         }
     };
 
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') btn.click(); });
     window.tg = (i) => { tasks[i].c = !tasks[i].c; run(); };
     window.rm = (i) => { tasks.splice(i, 1); run(); };
     run();
