@@ -136,4 +136,51 @@
 
     btn.onclick = () => {
         if(input.value.trim()) {
-            tasks.push({ text
+            tasks.push({ text: input.value, done: false });
+            input.value = '';
+            update();
+        }
+    };
+
+    window.toggle = (i) => {
+        tasks[i].done = !tasks[i].done;
+        update(true);
+    };
+
+    window.remove = (i) => {
+        tasks.splice(i, 1);
+        update();
+    };
+
+    function launchConfetti() {
+        const colors = ['#818cf8', '#c084fc', '#f472b6', '#34d399'];
+        for (let i = 0; i < 40; i++) {
+            const conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.style.left = '50%';
+            conf.style.top = '50%';
+            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(conf);
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 5 + Math.random() * 10;
+            let x = 0, y = 0, opacity = 1;
+
+            const move = setInterval(() => {
+                x += Math.cos(angle) * velocity;
+                y += Math.sin(angle) * velocity + 2; // gravity
+                opacity -= 0.02;
+                conf.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+                conf.style.opacity = opacity;
+                if (opacity <= 0) {
+                    clearInterval(move);
+                    conf.remove();
+                }
+            }, 16);
+        }
+    }
+
+    update();
+</script>
+</body>
+</html>
