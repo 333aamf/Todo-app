@@ -28,7 +28,6 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .container { width: 100%; max-width: 450px; margin-top: 40px; }
@@ -37,56 +36,48 @@
             font-size: 32px; font-weight: 800; margin-bottom: 30px; 
             background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
         }
 
-        .input-wrapper { position: relative; margin-bottom: 30px; z-index: 10; }
+        .input-wrapper { position: relative; margin-bottom: 30px; }
 
         input[type="text"] {
             width: 100%; padding: 18px 25px; background: var(--card);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
             color: white; font-size: 16px; backdrop-filter: blur(10px);
-            outline: none; transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            outline: none; transition: 0.3s;
         }
 
         #add-btn {
             position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
             background: linear-gradient(to right, var(--primary), var(--accent));
             color: white; border: none; width: 45px; height: 45px;
-            border-radius: 15px; font-size: 24px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            border-radius: 15px; font-size: 24px; cursor: pointer;
         }
 
-        /* Task List Container */
-        #taskList { 
-            list-style: none; padding: 0; 
-            display: flex; flex-direction: column;
-        }
+        ul { list-style: none; padding: 0; display: flex; flex-direction: column; }
 
-        /* Animation for moving down */
         li {
             background: var(--card); backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.05);
             padding: 18px; border-radius: 20px;
             display: flex; align-items: center; margin-bottom: 12px;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
+            /* Smooth slide animation */
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
         }
 
         .checkbox-container {
             width: 26px; height: 26px; border: 2px solid var(--primary);
-            border-radius: 8px; cursor: pointer; position: relative; transition: 0.3s;
-            flex-shrink: 0;
+            border-radius: 8px; cursor: pointer; position: relative;
         }
 
-        .checkbox-container.checked { background: var(--primary); border-color: var(--primary); }
+        .checkbox-container.checked { background: var(--primary); }
         .checkbox-container.checked::after {
             content: '✓'; position: absolute; color: white; font-size: 16px;
             left: 50%; top: 50%; transform: translate(-50%, -50%);
         }
 
-        .task-text { flex: 1; margin: 0 15px; font-size: 16px; font-weight: 500; transition: 0.3s; }
-        .checked-text { text-decoration: line-through; opacity: 0.4; transform: scale(0.95); display: inline-block;}
+        .task-text { flex: 1; margin: 0 15px; font-size: 16px; }
+        .checked-text { text-decoration: line-through; opacity: 0.4; }
 
         .delete-btn { opacity: 0.3; background: none; border: none; color: white; font-size: 18px; cursor: pointer; }
     </style>
@@ -96,7 +87,7 @@
 <div class="container">
     <h1>Tasks</h1>
     <div class="input-wrapper">
-        <input type="text" id="taskInput" placeholder="Add something incredible..." autocomplete="off">
+        <input type="text" id="taskInput" placeholder="Add a task..." autocomplete="off">
         <button id="add-btn">+</button>
     </div>
     <ul id="taskList"></ul>
@@ -107,26 +98,23 @@
     const btn = document.getElementById('add-btn');
     const list = document.getElementById('taskList');
     
-    let tasks = JSON.parse(localStorage.getItem('tasks_v2')) || [];
+    // NEW storage key to force refresh
+    let tasks = JSON.parse(localStorage.getItem('tasks_pro_v3')) || [];
 
-    function update(shouldVibrate = false) {
-        // Haptic Feedback (Vibrate 10ms - short and sharp)
-        if (shouldVibrate && navigator.vibrate) {
-            navigator.vibrate(10);
-        }
+    function update(vibrate = false) {
+        if (vibrate && navigator.vibrate) navigator.vibrate(15);
 
-        // Sort: done items at the bottom
+        // This sorts: done (true/1) goes to the bottom, not done (false/0) stays up
         tasks.sort((a, b) => a.done - b.done);
         
-        localStorage.setItem('tasks_v2', JSON.stringify(tasks));
-        
-        // Render with slight delay to allow current animations to breathe
+        localStorage.setItem('tasks_pro_v3', JSON.stringify(tasks));
         list.innerHTML = '';
+        
         tasks.forEach((t, i) => {
             const li = document.createElement('li');
             li.innerHTML = `
                 <div class="checkbox-container ${t.done ? 'checked' : ''}" onclick="toggle(${i})"></div>
-                <span class="task-text ${t.done ? 'checked-text' : ''}" onclick="toggle(${i})">${t.text}</span>
+                <span class="task-text ${t.done ? 'checked-text' : ''}">${t.text}</span>
                 <button class="delete-btn" onclick="remove(${i})">✕</button>
             `;
             list.appendChild(li);
@@ -137,24 +125,21 @@
         if(input.value.trim()) {
             tasks.push({ text: input.value, done: false });
             input.value = '';
-            update(false); // No vibration for adding
+            update();
         }
     };
 
-    input.onkeypress = (e) => { if(e.key === 'Enter') btn.onclick(); };
-
     window.toggle = (i) => {
         tasks[i].done = !tasks[i].done;
-        update(true); // Vibrate on check/uncheck
+        update(true);
     };
 
     window.remove = (i) => {
         tasks.splice(i, 1);
-        update(false);
+        update();
     };
 
     update();
 </script>
-
 </body>
 </html>
