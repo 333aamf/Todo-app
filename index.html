@@ -23,11 +23,9 @@
             background-image: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%), 
                               radial-gradient(circle at 100% 100%, #2e1065 0%, transparent 50%);
             color: var(--text);
-            padding: 20px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
+            padding: 20px; margin: 0;
+            display: flex; justify-content: center;
+            min-height: 100vh; overflow-x: hidden;
         }
 
         .container { width: 100%; max-width: 450px; margin-top: 40px; }
@@ -61,7 +59,6 @@
             border: 1px solid rgba(255,255,255,0.05);
             padding: 18px; border-radius: 20px;
             display: flex; align-items: center; margin-bottom: 12px;
-            /* Smooth slide animation */
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
         }
 
@@ -80,6 +77,9 @@
         .checked-text { text-decoration: line-through; opacity: 0.4; }
 
         .delete-btn { opacity: 0.3; background: none; border: none; color: white; font-size: 18px; cursor: pointer; }
+
+        /* Confetti Styles */
+        .confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 100; border-radius: 2px; }
     </style>
 </head>
 <body>
@@ -98,18 +98,18 @@
     const btn = document.getElementById('add-btn');
     const list = document.getElementById('taskList');
     
-    // NEW storage key to force refresh
     let tasks = JSON.parse(localStorage.getItem('tasks_pro_v3')) || [];
 
     function update(vibrate = false) {
         if (vibrate && navigator.vibrate) navigator.vibrate(15);
 
-        // This sorts: done (true/1) goes to the bottom, not done (false/0) stays up
+        // Check if we just completed the last remaining task
+        const beforeCount = tasks.filter(t => !t.done).length;
+        
         tasks.sort((a, b) => a.done - b.done);
-        
         localStorage.setItem('tasks_pro_v3', JSON.stringify(tasks));
-        list.innerHTML = '';
         
+        list.innerHTML = '';
         tasks.forEach((t, i) => {
             const li = document.createElement('li');
             li.innerHTML = `
@@ -119,27 +119,21 @@
             `;
             list.appendChild(li);
         });
+
+        // Confetti logic: if list was partially unfinished and now all finished
+        const afterCount = tasks.filter(t => !t.done).length;
+        if (vibrate && beforeCount > 0 && afterCount === 0 && tasks.length > 0) {
+            launchConfetti();
+        }
     }
+
+    // ENTER KEY FIX
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            btn.onclick();
+        }
+    });
 
     btn.onclick = () => {
         if(input.value.trim()) {
-            tasks.push({ text: input.value, done: false });
-            input.value = '';
-            update();
-        }
-    };
-
-    window.toggle = (i) => {
-        tasks[i].done = !tasks[i].done;
-        update(true);
-    };
-
-    window.remove = (i) => {
-        tasks.splice(i, 1);
-        update();
-    };
-
-    update();
-</script>
-</body>
-</html>
+            tasks.push({ text
