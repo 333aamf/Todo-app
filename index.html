@@ -23,63 +23,145 @@
             background-image: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%), 
                               radial-gradient(circle at 100% 100%, #2e1065 0%, transparent 50%);
             color: var(--text);
-            padding: 20px; margin: 0;
-            display: flex; justify-content: center;
-            min-height: 100vh; overflow-x: hidden;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
 
-        .container { width: 100%; max-width: 450px; margin-top: 40px; }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            margin-top: 40px;
+        }
 
         h1 { 
-            font-size: 32px; font-weight: 800; margin-bottom: 30px; 
+            font-size: 32px; 
+            font-weight: 800; 
+            margin-bottom: 30px; 
             background: linear-gradient(to right, var(--primary), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
-        .input-wrapper { position: relative; margin-bottom: 30px; }
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+        }
 
         input[type="text"] {
-            width: 100%; padding: 18px 25px; background: var(--card);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
-            color: white; font-size: 16px; backdrop-filter: blur(10px);
-            outline: none; transition: 0.3s;
+            width: 100%;
+            padding: 18px 25px;
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.2);
         }
 
         #add-btn {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             background: linear-gradient(to right, var(--primary), var(--accent));
-            color: white; border: none; width: 45px; height: 45px;
-            border-radius: 15px; font-size: 24px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
         }
 
-        ul { list-style: none; padding: 0; display: flex; flex-direction: column; }
+        #add-btn:active { transform: translateY(-50%) scale(0.9); }
+
+        ul { list-style: none; padding: 0; }
 
         li {
-            background: var(--card); backdrop-filter: blur(10px);
+            background: var(--card);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.05);
-            padding: 18px; border-radius: 20px;
-            display: flex; align-items: center; margin-bottom: 12px;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            padding: 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .checkbox-container {
-            width: 26px; height: 26px; border: 2px solid var(--primary);
-            border-radius: 8px; cursor: pointer; position: relative;
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+            flex-shrink: 0;
         }
 
-        .checkbox-container.checked { background: var(--primary); }
+        .checkbox-container.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
         .checkbox-container.checked::after {
-            content: '✓'; position: absolute; color: white; font-size: 16px;
-            left: 50%; top: 50%; transform: translate(-50%, -50%);
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .task-text { flex: 1; margin: 0 15px; font-size: 16px; }
-        .checked-text { text-decoration: line-through; opacity: 0.4; }
+        .task-text {
+            flex: 1;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
 
-        .delete-btn { opacity: 0.3; background: none; border: none; color: white; font-size: 18px; cursor: pointer; }
+        .checked-text {
+            text-decoration: line-through;
+            opacity: 0.4;
+        }
 
-        .confetti { position: fixed; width: 8px; height: 8px; pointer-events: none; z-index: 100; border-radius: 2px; }
+        .delete-btn {
+            opacity: 0.3;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .delete-btn:hover { opacity: 1; color: #f87171; }
     </style>
 </head>
 <body>
@@ -87,7 +169,7 @@
 <div class="container">
     <h1>Tasks</h1>
     <div class="input-wrapper">
-        <input type="text" id="taskInput" placeholder="Add a task..." autocomplete="off">
+        <input type="text" id="taskInput" placeholder="Add something incredible..." autocomplete="off">
         <button id="add-btn">+</button>
     </div>
     <ul id="taskList"></ul>
@@ -98,70 +180,48 @@
     const btn = document.getElementById('add-btn');
     const list = document.getElementById('taskList');
     
-    let tasks = JSON.parse(localStorage.getItem('tasks_pro_v4')) || [];
+    let tasks = JSON.parse(localStorage.getItem('tasks_v2')) || [];
 
-    function update(vibrate = false) {
-        // Check if we finished the last task
-        const incompleteBefore = tasks.filter(t => !t.done).length;
-
-        // Sort: Done at bottom
+    function update() {
+        // SORTING LOGIC: Incomplete tasks first, then completed ones
         tasks.sort((a, b) => a.done - b.done);
-        localStorage.setItem('tasks_pro_v4', JSON.stringify(tasks));
         
+        localStorage.setItem('tasks_v2', JSON.stringify(tasks));
         list.innerHTML = '';
+        
         tasks.forEach((t, i) => {
             const li = document.createElement('li');
             li.innerHTML = `
                 <div class="checkbox-container ${t.done ? 'checked' : ''}" onclick="toggle(${i})"></div>
-                <span class="task-text ${t.done ? 'checked-text' : ''}">${t.text}</span>
+                <span class="task-text ${t.done ? 'checked-text' : ''}" onclick="toggle(${i})">${t.text}</span>
                 <button class="delete-btn" onclick="remove(${i})">✕</button>
             `;
             list.appendChild(li);
         });
-
-        if (vibrate && navigator.vibrate) navigator.vibrate(15);
-
-        // Celebration logic
-        const incompleteAfter = tasks.filter(t => !t.done).length;
-        if (vibrate && incompleteBefore === 1 && incompleteAfter === 0 && tasks.length > 0) {
-            launchConfetti();
-        }
     }
 
-    // Add function
-    function addTask() {
-        const val = input.value.trim();
-        if(val) {
-            tasks.push({ text: val, done: false });
+    btn.onclick = () => {
+        if(input.value.trim()) {
+            tasks.push({ text: input.value, done: false });
             input.value = '';
-            update(false);
+            update();
         }
-    }
+    };
 
-    btn.onclick = addTask;
-
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            addTask();
-        }
-    });
+    input.onkeypress = (e) => { if(e.key === 'Enter') btn.onclick(); };
 
     window.toggle = (i) => {
         tasks[i].done = !tasks[i].done;
-        update(true);
+        update();
     };
 
     window.remove = (i) => {
         tasks.splice(i, 1);
-        update(false);
+        update();
     };
 
-    function launchConfetti() {
-        const colors = ['#818cf8', '#c084fc', '#f472b6', '#34d399'];
-        for (let i = 0; i < 40; i++) {
-            const conf = document.createElement('div');
-            conf.className = 'confetti';
-            conf.style.left = '50%';
-            conf.style.top = '50%';
-            conf.style.backgroundColor = colors
+    update();
+</script>
+
+</body>
+</html>
