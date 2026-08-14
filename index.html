@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <title>Tasks Pro</title>
     
-    <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <!-- Links to Manifest and Icons -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/906/906334.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/906/906334.png">
     
     <style>
         :root {
@@ -41,17 +39,41 @@
         .container {
             width: 100%;
             max-width: 450px;
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         h1 { 
             font-size: 32px; 
             font-weight: 800; 
-            margin-bottom: 30px; 
+            margin-bottom: 20px; 
             background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -1px;
+        }
+
+        /* Custom Install Banner for Desktop & Mobile */
+        #pwa-install-banner {
+            display: none;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);
+        }
+
+        #pwa-install-banner button {
+            background: white;
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .input-wrapper {
@@ -175,6 +197,11 @@
 <body>
 
 <div class="container">
+    <div id="pwa-install-banner">
+        <span>Install App for Offline Use</span>
+        <button id="install-btn">Install</button>
+    </div>
+
     <h1>Tasks</h1>
     <div class="input-wrapper">
         <input type="text" id="taskInput" placeholder="Add something incredible..." autocomplete="off">
@@ -228,13 +255,32 @@
 
     update();
 
-    // Register Service Worker correctly for GitHub Pages
+    // --- PWA HANDLER ---
+    let deferredPrompt;
+    const banner = document.getElementById('pwa-install-banner');
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        banner.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                banner.style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+    });
+
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('SW Registered!', reg))
-                .catch(err => console.error('SW Registration Failed:', err));
-        });
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('ServiceWorker registered:', reg.scope))
+            .catch(err => console.error('ServiceWorker error:', err));
     }
 </script>
 
