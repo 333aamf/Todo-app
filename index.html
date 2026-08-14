@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tasks Pro</title>
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <!-- PWA Primary Meta Tags -->
+    <title>Tasks Pro</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Link to the Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Favicon and Apple Touch Icon (reusing your gorgeous SVG styling!) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     
     <style>
         :root {
@@ -183,9 +193,7 @@
     let tasks = JSON.parse(localStorage.getItem('tasks_v2')) || [];
 
     function update() {
-        // SORTING LOGIC: Incomplete tasks first, then completed ones
         tasks.sort((a, b) => a.done - b.done);
-        
         localStorage.setItem('tasks_v2', JSON.stringify(tasks));
         list.innerHTML = '';
         
@@ -221,6 +229,15 @@
     };
 
     update();
+
+    // REGISTER THE PWA SERVICE WORKER
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('PWA Service Worker registered successfully.'))
+            .catch(err => console.log('Service Worker registration failed:', err));
+        });
+    }
 </script>
 
 </body>
