@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- PWA Settings -->
     <title>Tasks Pro</title>
+    
+    <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
     
-    <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <!-- Links to Manifest and Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     
     <style>
         :root {
@@ -181,7 +184,6 @@
 </div>
 
 <script>
-    // --- APP LOGIC ---
     const input = document.getElementById('taskInput');
     const btn = document.getElementById('add-btn');
     const list = document.getElementById('taskList');
@@ -226,44 +228,14 @@
 
     update();
 
-    // --- DYNAMIC INLINE PWA GENERATOR ---
-    (function generatePWA() {
-        const svgIcon = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23818cf8'/><stop offset='100%' style='stop-color:%23c084fc'/></linearGradient></defs><rect width='100' height='100' rx='25' fill='url(%23g)'/><path d='M30 50l15 15l25-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>";
-
-        // 1. Inject Apple Touch Icon
-        const appleIcon = document.createElement('link');
-        appleIcon.rel = 'apple-touch-icon';
-        appleIcon.href = svgIcon;
-        document.head.appendChild(appleIcon);
-
-        // 2. Inject Virtual Manifest
-        const manifest = {
-            name: "Tasks Pro",
-            short_name: "TasksPro",
-            start_url: window.location.href,
-            display: "standalone",
-            background_color: "#0f172a",
-            theme_color: "#0f172a",
-            icons: [{ src: svgIcon, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        const manifestLink = document.createElement('link');
-        manifestLink.rel = 'manifest';
-        manifestLink.href = URL.createObjectURL(manifestBlob);
-        document.head.appendChild(manifestLink);
-
-        // 3. Inject Virtual Service Worker
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE = 'tasks-v1';
-                self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.add(location.href))));
-                self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-            `;
-            const swBlob = new Blob([swCode], {type: 'text/javascript'});
-            const swUrl = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swUrl).catch(() => {});
-        }
-    })();
+    // Register Service Worker correctly for GitHub Pages
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW Registered!', reg))
+                .catch(err => console.error('SW Registration Failed:', err));
+        });
+    }
 </script>
 
 </body>
